@@ -1,22 +1,48 @@
 const { app, BrowserWindow } = require('electron')
-const path = require('path')
-const serve = require('electron-serve')
+const child_process = require('child_process')
+const path = require("path")
 
-const loadURL = serve({ directory: 'tweb/public/' });
+if (app.isPackaged) {
+  const serve = require('electron-serve')
+  serve({ directory: 'tweb/public/' });
+}
 
 function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
+      preload: path.join(__dirname, './preload.js')
     }
   })
 
-  win.loadFile('tweb/public/index.html')
+  if (app.isPackaged) {
+    win.loadFile('tweb/public/index.html');
+  } else {
+    const packager = child_process.spawn(
+      'yarn',
+      [
+        'start',
+      ],
+      {
+        cwd: './tweb'
+      },
+    );
+
+    packager.stdout.on('data', function (data) {
+      console.log('[packager] ' + data.toString());
+    });
+    
+    packager.stderr.on('data', function (data) {
+      console.log('[packager] ' + data.toString());
+    });
+
+    win.loadURL('http://localhost:8080/');
+  }
 }
 
 app.whenReady().then(() => {
-  createWindow()
+  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

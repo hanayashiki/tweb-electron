@@ -25,7 +25,7 @@
       "packagerConfig": {
         "icon": "icon.icns",
         "ignore": [
-          "tweb\/(?!public)"
+          "tweb/(?!public)"
         ]
       },
       "makers": [
