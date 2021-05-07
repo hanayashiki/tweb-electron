@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron')
-const child_process = require('child_process')
 const path = require("path")
 
 if (app.isPackaged) {
@@ -19,24 +18,6 @@ function createWindow () {
   if (app.isPackaged) {
     win.loadFile('tweb/public/index.html');
   } else {
-    const packager = child_process.spawn(
-      'yarn',
-      [
-        'start',
-      ],
-      {
-        cwd: './tweb'
-      },
-    );
-
-    packager.stdout.on('data', function (data) {
-      console.log('[packager] ' + data.toString());
-    });
-    
-    packager.stderr.on('data', function (data) {
-      console.log('[packager] ' + data.toString());
-    });
-
     win.loadURL('http://localhost:8080/');
   }
 }
